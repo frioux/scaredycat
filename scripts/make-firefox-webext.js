@@ -22,6 +22,7 @@ const path = require('path')
 
 function firefoxManifest (manifest) {
   const out = { ...manifest }
+  delete out.key
   out.background = { scripts: [manifest.background.service_worker] }
   out.browser_specific_settings = {
     gecko: {
