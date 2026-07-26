@@ -359,7 +359,7 @@ module.exports = {
       throw err
 
     if (typeof(meta.details) === 'undefined') {
-      force = true
+      flags |= FETCH_FORCE
       meta.details = {}
     }
     if (feed.flags === 'COMPLETE') {
@@ -697,8 +697,9 @@ module.exports = {
                     current = this.all[id]
                     notify = true
                   }
-                } catch {}
-                // catch(msg => console.log(`${incoming.url} is ${msg}`))
+                } catch (e) {
+                  this.error(`Sync refresh of ${incoming.url} failed: ${e && (e.stack || e.message || e)}`)
+                }
                 updated = true
               } else if (current.editedAt > incoming.editedAt) {
                 if (syncType !== SYNC_EXTERNAL) {
