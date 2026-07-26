@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Scaredycat",
   "short_name": "Scaredycat",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "minimum_chrome_version": "116",
   "description": "Follow from afar.",
   "homepage_url": "https://github.com/frioux/fraidycat",
