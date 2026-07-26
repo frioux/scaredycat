@@ -43,7 +43,7 @@ const DEFAULT_FOLLOWS = [
   'https://pbfcomics.com/',
   'https://100r.ca/site/home.html',
   'https://www.windytan.com/',
-  'https://thisisnthappiness.com/',
+  'https://thisisnthappiness.com/rss',
   'https://seatsafetyswitch.com/'
 ]
 
@@ -692,7 +692,17 @@ module.exports = {
               if (!current || current.editedAt < incoming.editedAt || !isValidFollow(current)) {
                 try {
                   incoming.id = id
-                  await this.refresh(incoming, FETCH_SILENT)
+                  //
+                  // If the URL offers several feeds (a WordPress site lists
+                  // its comments feed alongside the main one, say), there is
+                  // no user here to pick from them - take the first, which is
+                  // the site's primary feed.
+                  //
+                  let sources = await this.refresh(incoming, FETCH_SILENT)
+                  if (sources instanceof Array && sources.length > 0) {
+                    incoming.feed = sources[0].url
+                    await this.refresh(incoming, FETCH_SILENT)
+                  }
                   if (syncType === SYNC_EXTERNAL) {
                     current = this.all[id]
                     notify = true
