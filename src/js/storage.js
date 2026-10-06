@@ -112,51 +112,15 @@ module.exports = {
     Object.assign(this, {fetched: {}, follows: {}, index: {}})
 
     //
-    // Update the scraping rules once an hour.
+    // The scraping rules ship with the extension. (They used to be
+    // downloaded hourly from huh.fraidyc.at, with this file as a fallback.)
     //
-    let pollFreq = 3000, pollDate = new Date(0), pollMod = "none"
-    let fetchScraper = async () => {
-      let now = new Date()
-      if (now - pollDate > (60 * 60 * 1000)) {
-        let mod, defs
-        pollDate = now
-
-        try {
-          let soc = await this.fetch("https://huh.fraidyc.at/defs/social.json")
-          mod = soc.headers.get('last-modified')
-          if (pollMod !== mod) {
-            let txt = await soc.text()
-            defs = JSON.parse(txt)
-          }
-        } catch (e) {
-          if (!this.scraper) {
-            let obj
-            try { obj = await this.readFile('/social.json') } catch {}
-            if (obj && obj.mod && obj.defs) {
-              mod = obj.mod
-              defs = obj.defs
-            } else {
-              mod = "built-in"
-              defs = rules
-            }
-          }
-        }
-
-        if (defs) {
-          this.socialJson = JSON.stringify(defs)
-          if (pollMod !== mod) {
-            this.scraper = new fraidyscrape(defs, this.dom, this.xpath)
-            pollMod = mod
-            this.writeFile('/social.json', {defs, mod})
-          }
-        }
-      }
-    }
+    this.scraper = new fraidyscrape(rules, this.dom, this.xpath)
+    this.socialJson = JSON.stringify(rules)
 
     let pollFn = () => {
       this.poll()
-      fetchScraper()
-      setTimeout(pollFn, pollFreq)
+      setTimeout(pollFn, 3000)
     }
 
     //
@@ -185,7 +149,6 @@ module.exports = {
     Object.assign(this, obj)
     this.update(obj, sender)
 
-    await fetchScraper()
     this.sync(inc, SYNC_FULL)
 
     //
@@ -202,7 +165,7 @@ module.exports = {
       this.sync({follows}, SYNC_EXTERNAL)
     }
 
-    setTimeout(pollFn, pollFreq)
+    setTimeout(pollFn, 3000)
   },
 
   toObject() {
