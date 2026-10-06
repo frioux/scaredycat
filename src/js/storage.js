@@ -112,8 +112,7 @@ module.exports = {
     Object.assign(this, {fetched: {}, follows: {}, index: {}})
 
     //
-    // The scraping rules ship with the extension. (They used to be
-    // downloaded hourly from huh.fraidyc.at, with this file as a fallback.)
+    // The scraping rules ship with the extension - see defs/social.json.
     //
     this.scraper = new fraidyscrape(rules, this.dom, this.xpath)
     this.socialJson = JSON.stringify(rules)
