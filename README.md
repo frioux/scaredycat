@@ -44,6 +44,8 @@ narrow down by importance: 'real-time', 'daily', 'weekly', 'monthly' or
   there is some logic to figure them out for you.
 * **Twitch, Twitter, Instagram, Facebook, SoundCloud, Bandcamp,
   Kickstarter, Patreon, Pinterest, Tumblr, Steam, Are.na** and more!
+  (Instagram only answers logged-in requests, so you need to be signed
+  in to instagram.com in the same browser.)
 
 ## Installation
 
