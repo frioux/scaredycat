@@ -351,7 +351,7 @@ F.prototype.scanScript = async function (vars, script, node, pathFn) {
       }
     }
 
-    let ops = cmd.op, val = null
+    let ops = cmd.op, val = null, match = null
     if (!(ops instanceof Array))
       ops = [ops]
     for (let j = 0; j < ops.length; j++) {

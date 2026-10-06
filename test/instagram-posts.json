@@ -1,0 +1,72 @@
+{
+  "data": {
+    "xdt_api__v1__feed__user_timeline_graphql_connection": {
+      "edges": [
+        {
+          "node": {
+            "code": "DXeUNTYiAIR",
+            "taken_at": 1776946312,
+            "media_type": 2,
+            "product_type": "clips",
+            "caption": {
+              "text": "out of mana"
+            },
+            "accessibility_caption": null,
+            "image_versions2": {
+              "candidates": [
+                {
+                  "url": "https://scontent-lax3-2.cdninstagram.com/v/t51.82787-15/6737...",
+                  "width": 540,
+                  "height": 960
+                }
+              ]
+            },
+            "video_versions": [
+              {
+                "url": "https://scontent-lax3-2.cdninstagram.com/o1/v/t2/f2/m86/AQMB..."
+              }
+            ],
+            "user": {
+              "pk": "71010745086",
+              "username": "gloomstomper",
+              "full_name": "gloomstomper",
+              "profile_pic_url": "https://scontent-lax3-2.cdninstagram.com/v/t51.82787-19/6883..."
+            }
+          }
+        },
+        {
+          "node": {
+            "code": "DXmwInqiblc",
+            "taken_at": 1777229355,
+            "media_type": 2,
+            "product_type": "clips",
+            "caption": {
+              "text": "ceremony"
+            },
+            "accessibility_caption": null,
+            "image_versions2": {
+              "candidates": [
+                {
+                  "url": "https://scontent-lax3-2.cdninstagram.com/v/t51.82787-15/6825...",
+                  "width": 540,
+                  "height": 960
+                }
+              ]
+            },
+            "video_versions": [
+              {
+                "url": "https://scontent-lax3-1.cdninstagram.com/o1/v/t2/f2/m86/AQN1..."
+              }
+            ],
+            "user": {
+              "pk": "71010745086",
+              "username": "gloomstomper",
+              "full_name": "gloomstomper",
+              "profile_pic_url": "https://scontent-lax3-2.cdninstagram.com/v/t51.82787-19/6883..."
+            }
+          }
+        }
+      ]
+    }
+  }
+}

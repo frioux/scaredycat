@@ -369,27 +369,35 @@
     ]
   },
 
+  "instagram.com:csrf": {
+    "url": "https://www.instagram.com/$username/",
+    "acceptHtml": [
+      {"var": "csrf", "op": "//script[contains(text(), 'csrf_token')]", "match": "\"csrf_token\":\"([^\"]+)\""}
+    ]
+  },
+
   "instagram.com:user": {
     "match": "^instagram\\.com/([^/?#]+)",
     "arguments": [0, {"var": "username"}],
-    "url": "https://www.instagram.com/api/v1/users/web_profile_info/?username=$username",
+    "depends": ["instagram.com:csrf"],
+    "url": "https://www.instagram.com/graphql/query",
+    "request": {"method": "POST", "headers:Content-Type": "application/x-www-form-urlencoded",
+      "headers:X-CSRFToken": "$csrf",
+      "body": "doc_id=29499217692996353&variables=%7B%22data%22%3A%7B%22count%22%3A12%2C%22include_reel_media_seen_timestamp%22%3Atrue%2C%22include_relationship_info%22%3Atrue%2C%22latest_besties_reel_media%22%3Atrue%2C%22latest_reel_media%22%3Atrue%7D%2C%22username%22%3A%22$username%22%2C%22__relay_internal__pv__PolarisMultiCaptionCarouselEnabledrelayprovider%22%3Atrue%2C%22__relay_internal__pv__PolarisShortDramaEnabledrelayprovider%22%3Afalse%2C%22__relay_internal__pv__PolarisReelsRecoDebugOverlayEnabledrelayprovider%22%3Afalse%7D"},
     "acceptJson": [
-      {"op": "$.data.user", "acceptJson": [
+      {"op": "$.data.xdt_api__v1__feed__user_timeline_graphql_connection.edges[0].node.user", "acceptJson": [
         {"var": "out:title", "op": "$.full_name", "mod": ["str"]},
-        {"var": "out:description", "op": "$.biography", "mod": ["str"]},
-        {"var": "out:photos:avatar", "op": "$.profile_pic_url", "mod": ["url"]},
-        {"op": "$.edge_owner_to_timeline_media.edges.*", "var": "out:posts",
-         "acceptJson": [
-          {"var": "shortcode", "op": "$.node.shortcode"},
-          {"var": "out:url", "op": "=https://www.instagram.com/p/$shortcode"},
-          {"var": "out:publishedAt", "op": "$.node.taken_at_timestamp",
-            "mod": ["int", "*1000", "date"]},
-          {"var": "out:video:full", "op": "$.node.video_url"},
-          {"var": "out:graphic:full", "op": "$.node.display_url", "mod": ["url"]},
-          {"var": "out:graphic:thumb", "op": "$.node.thumbnail_src", "mod": ["url"]},
-          {"var": "out:text", "op": ["$.node.edge_media_to_caption.edges[0].node.text",
-            "$.node.accessibility_caption"], "mod": ["str"]}
-        ]}
+        {"var": "out:author", "op": "$.username", "mod": ["str"]},
+        {"var": "out:photos:avatar", "op": "$.profile_pic_url", "mod": ["url"]}
+      ]},
+      {"op": "$.data.xdt_api__v1__feed__user_timeline_graphql_connection.edges.*", "var": "out:posts",
+       "acceptJson": [
+        {"var": "code", "op": "$.node.code"},
+        {"var": "out:url", "op": "=https://www.instagram.com/p/$code/"},
+        {"var": "out:publishedAt", "op": "$.node.taken_at", "mod": ["int", "*1000", "date"]},
+        {"var": "out:video:full", "op": "$.node.video_versions[0].url"},
+        {"var": "out:graphic:full", "op": "$.node.image_versions2.candidates[0].url", "mod": ["url"]},
+        {"var": "out:text", "op": ["$.node.caption.text", "$.node.accessibility_caption"], "mod": ["str"]}
       ]}
     ]
   },

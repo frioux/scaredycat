@@ -8,6 +8,7 @@
 // are covered by the app at runtime rather than here.)
 //
 const test = require('ava').default
+const fs = require('fs')
 const F = require('./src/js/fraidyscrape')
 const defs = require('./defs/social.json')
 
@@ -64,13 +65,47 @@ test('nextRequest: expands a multi-step queue (token then data)', t => {
   t.true(reqs[1].url.includes('variables={%22screen_name%22:%22jack%22'))
 })
 
-test('nextRequest: Instagram sends the browser login cookies and drops the share token', t => {
-  let tasks = social().detect('https://www.instagram.com/gloomstomper?stkn=djJqb2ZreXhlZWtz')
-  let req = social().nextRequest(tasks)
-  t.is(req.id, 'instagram.com:user')
-  t.is(req.url, 'https://www.instagram.com/api/v1/users/web_profile_info/?username=gloomstomper')
-  t.is(req.options.credentials, 'include')
-  t.is(req.options.headers['X-IG-App-Id'], '936619743392459')
+test('nextRequest: Instagram fetches the profile page for a CSRF token, then posts the GraphQL query', t => {
+  let scraper = social()
+  let tasks = scraper.detect('https://www.instagram.com/gloomstomper?stkn=djJqb2ZreXhlZWtz')
+  t.deepEqual(tasks.queue, ['instagram.com:csrf', 'instagram.com:user'])
+
+  // Step one: the profile page, with the browser's login cookies. The share
+  // token on the pasted URL is not part of the username.
+  let page = scraper.nextRequest(tasks)
+  t.is(page.url, 'https://www.instagram.com/gloomstomper/')
+  t.is(page.options.credentials, 'include')
+  t.is(page.options.headers['X-IG-App-Id'], '936619743392459')
+
+  // Step two: the token scraped from the page goes out as a header on the
+  // timeline query, whose form body carries the username.
+  tasks.vars.csrf = 'tok123'
+  let query = scraper.nextRequest(tasks)
+  t.is(query.url, 'https://www.instagram.com/graphql/query')
+  t.is(query.options.method, 'POST')
+  t.is(query.options.credentials, 'include')
+  t.is(query.options.headers['X-CSRFToken'], 'tok123')
+  t.is(query.options.headers['Content-Type'], 'application/x-www-form-urlencoded')
+  t.true(query.options.body.startsWith('doc_id='))
+  t.true(query.options.body.includes('%22username%22%3A%22gloomstomper%22'))
+})
+
+test('scrape: Instagram timeline query becomes posts with the profile as the follow', async t => {
+  let scraper = social()
+  let tasks = { queue: [], vars: { url: 'https://www.instagram.com/gloomstomper', username: 'gloomstomper' } }
+  let body = JSON.parse(fs.readFileSync('test/instagram-posts.json'))
+  let res = jsonResponse('https://www.instagram.com/graphql/query', body)
+  let out = (await scraper.scrape(tasks, { id: 'instagram.com:user' }, res)).out
+
+  t.is(out.title, 'gloomstomper')
+  t.is(out.author, 'gloomstomper')
+  t.true(out.photos.avatar.startsWith('https://scontent-lax3-2.cdninstagram.com/'))
+  t.is(out.posts.length, 2)
+  t.is(out.posts[0].url, 'https://www.instagram.com/p/DXeUNTYiAIR/')
+  t.is(out.posts[0].text, 'out of mana')
+  t.deepEqual(out.posts[0].publishedAt, new Date(1776946312 * 1000))
+  t.true(out.posts[0].graphic.full.startsWith('https://'))
+  t.true(out.posts[0].video.full.startsWith('https://'))
 })
 
 //
