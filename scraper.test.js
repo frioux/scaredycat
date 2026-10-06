@@ -59,8 +59,9 @@ test('nextRequest: expands a multi-step queue (token then data)', t => {
   let reqs = requestsFor(social(), 'https://twitter.com/jack')
   t.deepEqual(reqs.map(r => r.id),
     ['twitter.com:token', 'twitter.com:user', 'twitter.com:timeline'])
-  // The pre-encoded querystring (%2C for commas) survives URL rebuilding.
-  t.true(reqs[2].url.includes('ext=mediaStats%2ChighlightedLabel'))
+  // The JSON-in-querystring survives URL rebuilding, with the captured
+  // username interpolated and the quotes percent-encoded.
+  t.true(reqs[1].url.includes('variables={%22screen_name%22:%22jack%22'))
 })
 
 //
