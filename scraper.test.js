@@ -64,6 +64,15 @@ test('nextRequest: expands a multi-step queue (token then data)', t => {
   t.true(reqs[1].url.includes('variables={%22screen_name%22:%22jack%22'))
 })
 
+test('nextRequest: Instagram sends the browser login cookies and drops the share token', t => {
+  let tasks = social().detect('https://www.instagram.com/gloomstomper?stkn=djJqb2ZreXhlZWtz')
+  let req = social().nextRequest(tasks)
+  t.is(req.id, 'instagram.com:user')
+  t.is(req.url, 'https://www.instagram.com/api/v1/users/web_profile_info/?username=gloomstomper')
+  t.is(req.options.credentials, 'include')
+  t.is(req.options.headers['X-IG-App-Id'], '936619743392459')
+})
+
 //
 // scrape() - full JSON pipeline: jsonpath extraction, nested rule recursion,
 // and the assign transforms (html-to-text, url, date). The `url` transform is

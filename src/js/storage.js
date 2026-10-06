@@ -288,6 +288,16 @@ module.exports = {
           if (!res.ok) {
             // console.log(`${req.url} is giving a ${res.status} error.`)
             err = `${req.url} is giving a ${res.status} error.`
+            //
+            // Some sites (Instagram) only answer when the request carries
+            // the browser's own login cookies - the rule asks for them with
+            // 'credentials: include'. A 401/403 there means there weren't any.
+            //
+            if ((res.status === 401 || res.status === 403) &&
+                req.options.credentials === 'include') {
+              let host = new URL(req.url).hostname
+              err = `Log in to ${host} in this browser, then try again.`
+            }
           }
 
           obj = await this.scraper.scrape(tasks, req, res)

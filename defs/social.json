@@ -9,7 +9,7 @@
       "headers:DNT": "1", "headers:Content-Type": "application/json",
       "headers:X-Twitter-Active-User": "yes", "headers:Authority": "api.twitter.com",
       "headers:Accept-Language": "en-US,en;q=0.9", "headers:Accept": "*/*"},
-    "i.instagram.com": {"headers:X-IG-App-Id": "936619743392459"},
+    "www.instagram.com": {"credentials": "include", "headers:X-IG-App-Id": "936619743392459"},
     "www.tiktok.com": {"headers:User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
       "headers:Accept": "*/*", "headers:Referer": "https://www.tiktok.com/$user"},
     "api.tumblr.com": {"headers:Authorization": "Bearer aIcXSOoTtqrzR8L8YEIOmBeW94c3FmbSNSWAUbxsny9KKx5VFh"},
@@ -370,9 +370,9 @@
   },
 
   "instagram.com:user": {
-    "match": "^instagram\\.com/(.+)",
+    "match": "^instagram\\.com/([^/?#]+)",
     "arguments": [0, {"var": "username"}],
-    "url": "https://i.instagram.com/api/v1/users/web_profile_info/?username=$username",
+    "url": "https://www.instagram.com/api/v1/users/web_profile_info/?username=$username",
     "acceptJson": [
       {"op": "$.data.user", "acceptJson": [
         {"var": "out:title", "op": "$.full_name", "mod": ["str"]},
